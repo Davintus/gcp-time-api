@@ -1,7 +1,8 @@
 provider "google" {  
-  project     = var.project_id  
   credentials = file(var.credentials_file)  
-}  
+  project     = var.project_id  
+  region      = "us-central1"  
+} 
 
 module "vpc" {  
   source             = "./modules/vpc"  
