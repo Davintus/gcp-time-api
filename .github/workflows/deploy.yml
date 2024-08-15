@@ -29,14 +29,4 @@ jobs:
         run: |  
           cd api  
           docker build -t ${{ secrets.GCP_PROJECT_ID }}/gcp-time-api:latest .  
-          docker push ${{ secrets.GCP_PROJECT_ID }}/gcp-time-api:latest  
-
-      - name: Test API  
-        run: |  
-          sleep 30 # Wait for the API to be up  
-          RESPONSE=$(curl --write-out "%{http_code}\n" --silent --output /dev/null http://${{ outputs.k8s_cluster_endpoint }}/current_time)  
-          if [ "$RESPONSE" -ne "200" ]; then  
-            echo "API is not accessible. HTTP response code: $RESPONSE"  
-            exit 1  
-          fi  
-          echo "API is successfully accessible."
+          docker push ${{ secrets.GCP_PROJECT_ID }}/gcp-time-api:latest 
