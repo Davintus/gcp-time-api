@@ -1,0 +1,61 @@
+steps:  
+  # Step 1: Authenticate with Google Cloud  
+  - name: 'gcr.io/cloud-builders/gcloud'  
+    entrypoint: 'bash'  
+    args:  
+      - '-c'  
+      - |  
+        gcloud secrets versions access latest --secret="your-secret-name" > /workspace/gcloud-key.json  
+        gcloud auth activate-service-account --key-file=/workspace/gcloud-key.json  
+
+  # Step 2: Verify Active Account  
+  - name: 'gcr.io/cloud-builders/gcloud'  
+    args:  
+      - 'auth'  
+      - 'list'  
+
+  # Step 3: Create Artifact Registry Repository  
+  - name: 'gcr.io/cloud-builders/gcloud'  
+    args:  
+      - 'artifacts'  
+      - 'repositories'  
+      - 'create'  
+      - 'gcp-time-api-repo'  
+      - '--repository-format=docker'  
+      - '--location=us-central1'  
+      - '--description=Docker repository for GCP Time API'  
+    # This step can be skipped if the repository already exists  
+    id: 'create-repo'  
+    ignoreExitStatus: true  
+
+  # Step 4: Build Docker Image  
+  - name: 'gcr.io/cloud-builders/docker'  
+    args:  
+      - 'build'  
+      - '-t'  
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/gcp-time-api-repo/gcp-time-api'  
+      - './app'  
+
+  # Step 5: Push Docker Image to Artifact Registry  
+  - name: 'gcr.io/cloud-builders/docker'  
+    args:  
+      - 'push'  
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/gcp-time-api-repo/gcp-time-api'  
+
+  # Step 6: Initialize Terraform  
+  - name: 'hashicorp/terraform:latest'  
+    entrypoint: 'bash'  
+    args:  
+      - '-c'  
+      - |  
+        cd terraform  
+        terraform init  
+        terraform apply -auto-approve -var="project_id=$PROJECT_ID"  
+
+# Substitutions can be created in the Cloud Build trigger setup, especially for GCP_SA_KEY  
+substitutions:  
+  _GCP_SA_KEY: $GCP_SA_KEY  
+
+# Options for notifications, logs, etc.  
+options:  
+  logging: CLOUD_LOGGING_ONLY
