@@ -25,6 +25,7 @@ jobs:
 
       - name: Enable APIs  
         run: |  
+          gcloud auth activate-service-account --key-file=<(echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode)
           gcloud services enable artifactregistry.googleapis.com  
           gcloud services enable cloudbuild.googleapis.com  
           gcloud services enable container.googleapis.com  
