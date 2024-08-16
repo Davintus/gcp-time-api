@@ -1,7 +1,7 @@
 steps:  
   # Step 1: Authenticate with Google Cloud  
   - name: 'gcr.io/cloud-builders/gcloud'  
-    entrypoint: 'bash'
+    entrypoint: 'bash'  
     args:  
       - '-c'  
       - |  
@@ -17,15 +17,10 @@ steps:
   # Step 3: Create Artifact Registry Repository  
   - name: 'gcr.io/cloud-builders/gcloud'  
     args:  
-      - 'artifacts'  
-      - 'repositories'  
-      - 'create'  
-      - 'gcp-time-api-repo'  
-      - '--repository-format=docker'  
-      - '--location=us-central1'  
-      - '--description=Docker repository for GCP Time API'  
-    id: 'create-repo'  
-    ignoreExitStatus: true # Continue even if it already exists  
+      - 'sh'  
+      - '-c'  
+      - |  
+        gcloud artifacts repositories create gcp-time-api-repo --repository-format=docker --location=us-central1 --description="Docker repository for GCP Time API" || true  
 
   # Step 4: Build Docker Image  
   - name: 'gcr.io/cloud-builders/docker'  
@@ -53,7 +48,7 @@ steps:
 
 # Substitutions  
 substitutions:  
-  _GCP_SA_KEY: $GCP_SA_KEY
+  _GCP_SA_KEY: $GCP_SA_KEY  
 
 # Options  
 options:  
