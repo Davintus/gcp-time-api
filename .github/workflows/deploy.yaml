@@ -27,11 +27,11 @@ jobs:
       - name: Set active project  
         run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}    
 
-      - name: Enable APIs  
-        run: |  
-          gcloud services enable artifactregistry.googleapis.com  
-          gcloud services enable cloudbuild.googleapis.com  
-          gcloud services enable container.googleapis.com 
+      # - name: Enable APIs  
+      #   run: |  
+      #     gcloud services enable artifactregistry.googleapis.com  
+      #     gcloud services enable cloudbuild.googleapis.com  
+      #     gcloud services enable container.googleapis.com 
 
       - name: Build Docker image  
         run: |  
