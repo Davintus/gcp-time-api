@@ -1,8 +1,13 @@
-variable "project_id" {  
-  description = "The GCP Project ID"  
-}  
-
+variable "project_id" {}  
 variable "region" {  
-  description = "GCP region"  
-  default     = "us-central1"  
+  default = "us-central1"  
+}  
+variable "repository_id" {  
+  default = "gcp-time-api-repo"  
+}  
+variable "cluster_name" {  
+  default = "gcp-time-api-cluster"  
+}  
+variable "credentials_file" {  
+  default = "\gcp-time-api\gcp_credentials.json"
 }

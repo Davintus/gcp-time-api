@@ -1,0 +1,42 @@
+name: CI/CD Pipeline  
+
+on:  
+  push:  
+    branches:  
+      - main  
+  pull_request:  
+    branches:  
+      - main  
+
+jobs:  
+  build:  
+    runs-on: ubuntu-latest  
+
+    steps:  
+      - name: Check out code  
+        uses: actions/checkout@v2  
+
+      - name: Set up Google Cloud SDK  
+        uses: google-github-actions/setup-gcloud@v0.2.2  
+        with:  
+          project_id: ${{ secrets.GCP_PROJECT_ID }}  
+          service_account_key: ${{ secrets.GCP_SA_KEY }}  
+          export_default_credentials: true  
+
+      - name: Enable APIs  
+        run: |  
+          gcloud services enable artifactregistry.googleapis.com  
+          gcloud services enable cloudbuild.googleapis.com  
+          gcloud services enable container.googleapis.com  
+
+      - name: Build Docker image  
+        run: |  
+          gcloud builds submit \
+            --tag us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gcp-time-api-repo/gcp-time-api \
+            --project ${{ secrets.GCP_PROJECT_ID }} \
+            ./app  
+
+      - name: Deploy to GKE  
+        run: |  
+          kubectl apply -f k8s/deployment.yaml  
+          kubectl apply -f k8s/service.yaml
