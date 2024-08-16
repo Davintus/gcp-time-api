@@ -5,7 +5,7 @@ steps:
     args:  
       - '-c'  
       - |  
-        echo ${_GCP_SA_KEY} | base64 --decode > /workspace/gcloud-key.json  
+        echo ${_GCP_SA_KEY} | base64 --decode > /workspace/gcloud-key.json || (echo "Failed to decode the GCP service account key."; exit 1)  
         gcloud auth activate-service-account --key-file=/workspace/gcloud-key.json  
 
   # Step 2: Verify Active Account  
