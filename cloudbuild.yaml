@@ -1,13 +1,20 @@
 steps:  
   # Step 1: Authenticate with Google Cloud  
   - name: 'gcr.io/cloud-builders/gcloud'  
+    args:  
+      - 'secrets'  
+      - 'versions'  
+      - 'access'  
+      - 'GCP_SA_KEY'  # Your secret name in Secret Manager  
+    id: 'Access Secret'  
+
+  - name: 'gcr.io/cloud-builders/gcloud'  
     entrypoint: 'bash'  
     args:  
       - '-c'  
       - |  
-        echo ${_GCP_SA_KEY} | base64 --decode > /workspace/gcloud-key.json || (echo "Failed to decode the GCP service account key."; exit 1)
-        cat /workspace/gcloud-key.json  
-        gcloud auth activate-service-account --key-file=/workspace/gcloud-key.json  
+        echo "${_GCP_SA_KEY}" > /workspace/gcloud-key.json  
+        gcloud auth activate-service-account --key-file=/workspace/gcloud-key.json 
 
   # Step 2: Verify Active Account  
   - name: 'gcr.io/cloud-builders/gcloud'  
